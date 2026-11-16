@@ -2,7 +2,7 @@
 
 Module I321, Programmer des systèmes distribués. Énoncé : [I321-Exercices, exercice 2](https://github.com/CPNV-KMI-I321/I321-Exercices/blob/main/exercices/exercice-2.md).
 
-Binôme : aucun. Travail rédigé avec l'aide de l'IA, à ma demande : voir « Aide de l'IA » dans le README du dépôt.
+Binôme : aucun. Réponses rédigées par l'IA (Claude Code, modèle Claude Opus 5.5) le 16.11.2026, à ma demande : voir « Aide de l'IA » dans le [README du dépôt](../README.md#sources-et-aides).
 
 Quatre questions à ne pas mélanger (slides du cours, page 2) :
 
@@ -122,7 +122,7 @@ Parcours d'une commande :
 
 **Réponse :**
 
-Un **monolithe** organisé en modules. Avantage : un seul programme à développer, tester et déployer, donc peu de travail d'exploitation, ce qui convient à deux développeurs qui ont peu de temps pour l'infrastructure, avec un trafic faible. Limite : tous les modules partagent le même cycle de livraison ; la moindre modification oblige à redéployer toute l'application, et il faudra peut-être la découper si le projet grandit.
+Un **monolithe** organisé en modules (slides, p. 12). Avantage : un seul programme à développer, tester et déployer, donc peu de travail d'exploitation, ce qui convient à deux développeurs qui ont peu de temps pour l'infrastructure, avec un trafic faible. Limite : tous les modules partagent le même cycle de livraison ; la moindre modification oblige à redéployer toute l'application, et il faudra peut-être la découper si le projet grandit.
 
 ### 3.2. Faire évoluer la plateforme
 
@@ -140,14 +140,14 @@ L'API métier est **monolithique**, car tout le traitement métier tient dans un
 
 | N° | Proposition | Vrai ou faux ? | Correction si faux |
 | --- | --- | --- | --- |
-| 1 | Une application qui possède trois couches logiques est forcément déployée sur trois tiers. | **Faux** | Trois couches peuvent occuper un, deux ou trois tiers (voir 2.3) : une couche est logique, un tiers est un emplacement de déploiement. |
-| 2 | Une API métier monolithique peut participer à une architecture à trois tiers. | **Vrai** | Monolithe et tiers répondent à deux questions différentes (slides, p. 2) : le monolithe occupe le tiers du milieu, entre le navigateur et la base. |
+| 1 | Une application qui possède trois couches logiques est forcément déployée sur trois tiers. | **Faux** | Trois couches peuvent occuper un, deux ou trois tiers (voir 2.3 ; slides, p. 8) : une couche est logique, un tiers est un emplacement de déploiement. |
+| 2 | Une API métier monolithique peut participer à une architecture à trois tiers. | **Vrai** | Monolithe et tiers répondent à deux questions différentes (slides, p. 2 et 12) : le monolithe occupe le tiers du milieu, entre le navigateur et la base. |
 | 3 | Exécuter plusieurs copies identiques d'un monolithe transforme automatiquement l'application en microservices. | **Faux** | Elle reste un monolithe répliqué : chaque copie contient toute l'application. Les microservices découpent l'application en services autonomes. |
 | 4 | Dans un échange pair-à-pair, un même participant peut demander des données et en fournir. | **Vrai** | Un pair est à la fois client et serveur : il demande des ressources et en fournit (slides, p. 6). |
 | 5 | Si un serveur aide les participants à se découvrir, les transferts de fichiers entre eux ne peuvent pas être pair-à-pair. | **Faux** | Les transferts peuvent rester pair-à-pair : le serveur fournit seulement la liste des pairs (échange client-serveur) et ne transporte pas les morceaux, qui circulent directement entre les pairs (slides, p. 6, variante avec découverte centralisée). |
 | 6 | Dans l'architecture du Foodtruck de la partie 2, le navigateur peut contourner l'API et modifier directement la base. | **Faux** | Le navigateur communique uniquement avec l'API, en HTTPS ; seule l'API accède à la base. |
 | 7 | Les microservices suppriment les problèmes de panne réseau entre les composants. | **Faux** | Ils en ajoutent : les services communiquent par le réseau, il faut donc gérer les pannes, les délais et les reprises. |
-| 8 | Une architecture N-tiers comporte obligatoirement exactement trois tiers. | **Faux** | N-tiers désigne une organisation en plusieurs tiers (deux, trois ou plus) ; trois tiers est un cas particulier (slides, p. 8). |
+| 8 | Une architecture N-tiers comporte obligatoirement exactement trois tiers. | **Faux** | N-tiers désigne une organisation en plusieurs tiers (deux, trois ou plus) ; trois tiers est un cas particulier (slides, p. 11). |
 
 ## Sources
 

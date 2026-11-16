@@ -2,7 +2,7 @@
 
 Module I321, Programmer des systèmes distribués. Énoncé : [I321-Exercices, exercice 1](https://github.com/CPNV-KMI-I321/I321-Exercices/blob/main/exercices/exercice-1.md).
 
-Binôme : aucun. Travail rédigé avec l'aide de l'IA, à ma demande : voir « Aide de l'IA » dans le README du dépôt.
+Binôme : aucun. Réponses rédigées par l'IA (Claude Code, modèle Claude Opus 5.5) le 16.11.2026, à ma demande : voir « Aide de l'IA » dans le [README du dépôt](../README.md#sources-et-aides).
 
 Rappel du principe : la **méthode** dit ce que le client veut faire (son intention) ; le **code** dit le résultat du traitement de sa requête (réussite, refus, erreur, ou prise en charge différée avec `202`).
 
@@ -103,4 +103,4 @@ Non. `204 No Content` signifie que la réponse n'a pas de corps : y ajouter un m
 - [MDN : codes de statut de réponse HTTP](https://developer.mozilla.org/fr/docs/Web/HTTP/Reference/Status) (`202`, `301`, `302`, `308`, `401`, `403`, `405`, `409`, `415`, `503`)
 - Cours I321 : [Les méthodes HTTP](https://github.com/CPNV-KMI-I321/I321/blob/main/theorie-et-concepts/les-base-dune-api/les-methodes-http.md) et [Les codes HTTP](https://github.com/CPNV-KMI-I321/I321/blob/main/theorie-et-concepts/les-base-dune-api/les-codes-http.md)
 - [RFC 9110, HTTP Semantics](https://www.rfc-editor.org/rfc/rfc9110.html) (§9.3.4 `PUT`, §15.3.5 `204`, §15.5.21 `422`)
-- Corrigé de l'enseignant : [I321-Exercices, solutions/exercice-1-solutions.md](https://github.com/CPNV-KMI-I321/I321-Exercices/blob/main/solutions/exercice-1-solutions.md), publié le 09.11.2026, consulté le 16.11.2026 après la rédaction pour comparer les réponses ; la mention de l'en-tête `Content-Type: application/json` (partie 2.1) en vient.
+- Corrigé de l'enseignant : [I321-Exercices, solutions/exercice-1-solutions.md](https://github.com/CPNV-KMI-I321/I321-Exercices/blob/main/solutions/exercice-1-solutions.md), publié le 09.11.2026, consulté par l'IA le 16.11.2026 pour vérifier les réponses. Quatre points viennent de lui : l'en-tête `Content-Type: application/json` (2.1), la justification de `200` plutôt que `204` (situation 4), la distinction entre un JSON bien formé et une valeur hors contrat (situation 7) et la nuance sur le `503`, qui suppose une réponse HTTP (partie 4, n° 11).
