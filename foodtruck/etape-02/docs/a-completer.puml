@@ -1,0 +1,69 @@
+@startuml diagramme-de-classes
+!pragma layout smetana
+title Étape 02 : diagramme de classes (deux entités, sans association)
+skinparam shadowing false
+hide empty members
+
+class Pizza {
+  + id : Integer
+  + name : String
+  + description : String
+  + price : Number
+  + imageUrl : String [0..1]
+  --
+  {static} + findAll() : Pizza[*]
+  {static} + findById(id : Integer) : Pizza [0..1]
+  {static} + create(name : String, description : String, price : Number, imageUrl : String [0..1]) : Pizza
+  {static} + update(id : Integer, name : String, description : String, price : Number, imageUrl : String [0..1]) : Pizza [0..1]
+  {static} + remove(id : Integer) : Boolean
+}
+
+class Ingredient {
+  + id : Integer
+  + name : String
+  + price : Number
+  --
+  {static} + findAll() : Ingredient[*]
+  {static} + findById(id : Integer) : Ingredient [0..1]
+  {static} + create(name : String, price : Number) : Ingredient
+  {static} + update(id : Integer, name : String, price : Number) : Ingredient [0..1]
+  {static} + remove(id : Integer) : Boolean
+}
+
+Pizza -[hidden]right- Ingredient
+note bottom of Ingredient
+  Aucune association à cette étape :
+  un ingrédient existe sans pizza.
+  Le lien arrive à l'étape 03 (table pizza_ingredients).
+end note
+@enduml
+
+@startuml mld
+!pragma layout smetana
+title Étape 02 : MLD (deux tables, sans association)
+skinparam shadowing false
+hide circle
+
+entity "pizzas" as pizzas {
+  * id : INTEGER <<PK>>
+  --
+  * name : TEXT
+  * description : TEXT (défaut '')
+  * price : REAL (price >= 0)
+  imageUrl : TEXT (facultatif)
+}
+
+entity "ingredients" as ingredients {
+  * id : INTEGER <<PK>>
+  --
+  * name : TEXT
+  * price : REAL (price >= 0)
+}
+
+pizzas -[hidden]right- ingredients
+note bottom of pizzas
+  * = obligatoire (NOT NULL)
+  PK = clé primaire, attribuée par SQLite (AUTOINCREMENT)
+  Aucune clé étrangère : les deux tables sont indépendantes.
+end note
+@enduml
