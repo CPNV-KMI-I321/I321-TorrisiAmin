@@ -1,4 +1,4 @@
-> Étape 03 terminée : voir le [README du dépôt](../../README.md) (travail fait, diagrammes, aide de l'IA). Ci-dessous, le README d'origine du starter, sans changement.
+> Étape 03 terminée : voir le [README du dépôt](../../README.md) (travail fait, diagrammes, aide de l'IA). Pour lancer ce dossier : depuis la racine du dépôt, `cd foodtruck/etape-03`, `npm ci`, `npm start`, puis http://localhost:3000/api/pizzas et /api/ingredients. Ci-dessous, le README d'origine du starter, sans changement : ses parties « Démarrer » et « Consulter le corrigé » parlent du dépôt du starter, pas de ce dossier.
 
 # Foodtruck — Starter 3
 
