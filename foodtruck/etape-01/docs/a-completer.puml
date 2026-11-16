@@ -1,0 +1,44 @@
+@startuml sequence-pizzas
+title Étape 01 : API Pizzas, du client jusqu'à SQLite
+skinparam shadowing false
+actor Client
+participant "Route\nroutes/pizzas.js" as Route
+participant "Controller\ncontrollers/pizzasController.js" as Controller
+participant "Entity\nentities/Pizza.js" as Entity
+database "SQLite\ndata/foodtruck.sqlite" as SQLite
+
+== Créer une pizza ==
+Client -> Route : POST /api/pizzas\n{"name":"Margherita","description":"Classique","price":14.5}
+Route -> Controller : create(req, res)
+Controller -> Controller : validatePizza(req.body)
+alt données invalides (prix négatif, nom vide)
+  Controller --> Client : 400 Bad Request\n{"error": "..."}
+  note right of Controller : fail(400) lève une erreur,\nle middleware errorHandler écrit la réponse
+else données valides
+  Controller -> Entity : create(data)
+  Entity -> SQLite : INSERT INTO pizzas (name, description, price, imageUrl)\nVALUES (?, ?, ?, ?)
+  SQLite --> Entity : lastInsertRowid
+  Entity -> SQLite : SELECT * FROM pizzas WHERE id = ?
+  SQLite --> Entity : ligne créée
+  Entity --> Controller : pizza
+  Controller --> Client : 201 Created\nLocation: /api/pizzas/{id}\n{pizza en JSON}
+end
+
+== Consulter une pizza ==
+Client -> Route : GET /api/pizzas/{id}
+Route -> Controller : get(req, res)
+Controller -> Controller : validateId(req.params.id)
+alt identifiant invalide (par exemple « abc »)
+  Controller --> Client : 400 Bad Request
+else identifiant valide
+  Controller -> Entity : findById(id)
+  Entity -> SQLite : SELECT * FROM pizzas WHERE id = ?
+  SQLite --> Entity : une ligne, ou aucune
+  Entity --> Controller : pizza, ou undefined
+  alt pizza trouvée
+    Controller --> Client : 200 OK\n{pizza en JSON}
+  else aucune pizza
+    Controller --> Client : 404 Not Found\n{"error": "Pizza introuvable."}
+  end
+end
+@enduml
