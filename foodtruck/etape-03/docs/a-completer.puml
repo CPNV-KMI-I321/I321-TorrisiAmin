@@ -1,0 +1,127 @@
+@startuml mcd
+!pragma layout smetana
+allowmixing
+title Étape 03 : MCD, une pizza contient des ingrédients (N à N)
+skinparam shadowing false
+hide circle
+hide empty methods
+
+class "PIZZA" as PIZZA {
+  {field} <u>id</u> (identifiant)
+  {field} nom (unique, majuscules ou non)
+  description
+  {field} prix (saisi, >= 0)
+  {field} image (facultative)
+}
+
+class "INGRÉDIENT" as INGREDIENT {
+  {field} <u>id</u> (identifiant)
+  nom
+  {field} prix (>= 0)
+}
+
+usecase "contient" as CONTIENT
+
+PIZZA "1,N" -right- CONTIENT
+CONTIENT -right- "0,N" INGREDIENT
+
+note bottom of CONTIENT
+  Cardinalités (Merise) : écrites près de l'entité qu'elles comptent.
+  1,N près de PIZZA : une pizza contient au moins un ingrédient.
+  0,N près d'INGRÉDIENT : un ingrédient peut n'être dans aucune pizza
+  (on crée les ingrédients avant les pizzas).
+  Les deux maximums valent N : c'est un lien N à N.
+end note
+@enduml
+
+@startuml mld
+!pragma layout smetana
+title Étape 03 : MLD, le lien N à N devient la table pizza_ingredients
+skinparam shadowing false
+hide circle
+
+entity "pizzas" as pizzas {
+  * id : INTEGER <<PK>>
+  --
+  * name : TEXT <<UNIQUE NOCASE>>
+  * description : TEXT (défaut '')
+  * price : REAL (price >= 0)
+  imageUrl : TEXT (facultatif)
+}
+
+entity "pizza_ingredients" as composition {
+  * pizzaId : INTEGER <<PK, FK>>
+  * ingredientId : INTEGER <<PK, FK>>
+}
+
+entity "ingredients" as ingredients {
+  * id : INTEGER <<PK>>
+  --
+  * name : TEXT
+  * price : REAL (price >= 0)
+}
+
+pizzas ||-right-|{ composition : "ON DELETE CASCADE"
+composition }o-right-|| ingredients : "ON DELETE RESTRICT"
+
+note bottom of composition
+  * = obligatoire (NOT NULL). PK = clé primaire, FK = clé étrangère.
+  Clé primaire composée (pizzaId, ingredientId) : un ingrédient
+  ne figure qu'une fois dans une même pizza.
+  pizzaId -> pizzas.id : supprimer une pizza efface sa composition.
+  ingredientId -> ingredients.id : un ingrédient utilisé ne se supprime pas
+  (l'API répond 409 avant que SQLite ne refuse).
+  « Au moins un ingrédient » : règle vérifiée par le service.
+end note
+@enduml
+
+@startuml sequence-creation
+title Étape 03 : créer une pizza et sa composition, avec ses cas d'erreur
+skinparam shadowing false
+actor Client
+participant "Contrôleur\npizzasController.js" as Controleur
+participant "Service\npizzasService.js" as Service
+participant "Entités\nIngredient.js, Pizza.js,\nPizzaComposition.js" as Entites
+database "SQLite\ndata/starter-3.sqlite" as SQLite
+
+Client -> Controleur : POST /api/pizzas\n{"name":"Margherita","price":14.5,"ingredientIds":[1, 2]}
+Controleur -> Service : create(req.body)
+Service -> Service : validatePizza(body)\nvalidateIngredientIds(body.ingredientIds)
+alt données mal formées (prix négatif, nom vide,\ningredientIds absent, vide, en double ou pas entier)
+  Service --> Controleur : fail(400)
+  Controleur --> Client : 400 Bad Request\n{"error": "..."}
+  note right of Controleur : fail() lève une erreur ;\nle middleware errorHandler écrit la réponse
+else données bien formées
+  Service -> SQLite : BEGIN IMMEDIATE
+  Service -> Entites : Ingredient.findById(id), pour chaque id
+  Entites -> SQLite : SELECT * FROM ingredients WHERE id = ?
+  alt un ingrédient n'existe pas
+    Service -> SQLite : ROLLBACK
+    Service --> Controleur : fail(400)
+    Controleur --> Client : 400 Bad Request\n{"error": "Ingrédient introuvable : 999."}
+  else tous les ingrédients existent
+    Service -> Entites : Pizza.findByName(name)
+    Entites -> SQLite : SELECT * FROM pizzas\nWHERE name = ? COLLATE NOCASE
+    alt nom déjà utilisé (majuscules ou non)
+      Service -> SQLite : ROLLBACK
+      Service --> Controleur : fail(409)
+      Controleur --> Client : 409 Conflict
+    else nom libre
+      Service -> Entites : Pizza.create(data)
+      Entites -> SQLite : INSERT INTO pizzas ...
+      Service -> Entites : PizzaComposition.replace(pizzaId, ingredientIds)
+      Entites -> SQLite : DELETE puis INSERT INTO pizza_ingredients ...
+      alt SQLite échoue pendant l'écriture
+        Service -> SQLite : ROLLBACK
+        note right of SQLite : ni pizza ni composition :\nrien n'est gardé à moitié
+        Service --> Controleur : erreur SQLite
+        Controleur --> Client : 500 Internal Server Error
+      else tout est écrit
+        Service -> SQLite : COMMIT
+        Service --> Controleur : pizza avec ingredientIds
+        Controleur --> Client : 201 Created\nLocation: /api/pizzas/{id}\n{..., "ingredientIds": [1, 2]}
+      end
+    end
+  end
+end
+@enduml
